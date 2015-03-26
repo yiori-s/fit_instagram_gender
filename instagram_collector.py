@@ -1,6 +1,6 @@
 import sys
 from settings import instgram_access_token
-
+from alchemyapi.alchemyapi import AlchemyAPI
 import requests
 import requests_cache
 import json
@@ -15,7 +15,7 @@ class InstagramAPI():
 		self.access_token = access_token
 
 	def user_recent_media(self, user_id):
-		url = URL_ROOT + "users/{0}/media/recent/?access_token={1}".format(instgram_user_id, self.access_token)
+		url = URL_ROOT + "users/{0}/media/recent/?access_token={1}".format(user_id, self.access_token)
 
 		r = requests.get(url)
 		return r.json()
@@ -37,14 +37,13 @@ class InstagramAPI():
 		# user_name = 'yiori_s'
 		url = URL_ROOT + "users/search?q={0}&access_token={1}".format(user_name, self.access_token)
 		r = requests.get(url)
-		result = r.json()
+		result = r.json()	
 		user_id = None
-
-		#for i in range(len(result["data"])):
-		#	if user_name == result["data"][i]["username"]:
-		#		user_id = result["data"][i]["id"]
-		#		break
-		user_id = str(37880905)
+		for i in range(len(result["data"])):
+			if user_name == result["data"][i]["username"]:
+				user_id = result["data"][i]["id"]
+				break
+		#user_id = str(37880905)
 
 		instgram_user_id = user_id
 		if instgram_user_id is not None:
@@ -95,6 +94,14 @@ class InstagramAPI():
 			data.append(small_dict)			
 		return data
 
+class Alchemy():
+	def tag_list(image_url):
+		alchemyapi = AlchemyAPI()
+		alchemy_json=alchemyapi.imageTagging("url", image_url)
+		tag = alchemy_json["imageKeywords"][0]["text"]
+		score = alchemy_json["imageKeywords"][0]["score"]
+		return tag, score
+
 if __name__ == '__main__':
 	argvs = sys.argv
 	argc = len(argvs)
@@ -105,5 +112,16 @@ if __name__ == '__main__':
 	instgram_user_name = argvs[1]
 	api = InstagramAPI(access_token=instgram_access_token)
 	data = api.media_list(user_name=instgram_user_name)
+	for entry in data:
+		image_url = entry[2]
+		alchemyapi = AlchemyAPI()
+		alchemy_json=alchemyapi.imageTagging("url", image_url)
+		if len(alchemy_json["imageKeywords"]) > 0:
+			tag = alchemy_json["imageKeywords"][0]["text"]
+			score = alchemy_json["imageKeywords"][0]["score"]
+		#tag, score= Alchemy().tag_list(image_url=url)
+		entry.append(tag)
+		entry.append(score)
+	
 	print(data)
 

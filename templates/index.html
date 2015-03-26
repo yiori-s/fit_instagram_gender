@@ -5,14 +5,12 @@
 
 {% if method == "POST" %}
 	<ul class="entries">
-	<!--
 	{% for entry in entries %}
 			<h2>Date:</h2>{{ entry['date'] }} </br>
 			<h2>Caption:</h2>{{ entry['caption'] }} </br>
-			<h2>IMAGE:</h2><img src = "{{ entry['url'] }}" ></br>
+			<h2>Image:</h2><img src = "{{ entry['url'] }}" ></br>
+			<h2>Tag:</h2>{{ entry['tag'] }}</br>
 	{% endfor %}
-	-->
-	{{ entries }}
 	</ul>
 
 {% else %}
