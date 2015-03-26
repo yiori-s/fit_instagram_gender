@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+<h1>Instagram test</h1>
+<h2> {{ body }} </h2>
+
+{% if method == "POST" %}
+	<ul class="entries">
+	<!--
+	{% for entry in entries %}
+			<h2>Date:</h2>{{ entry['date'] }} </br>
+			<h2>Caption:</h2>{{ entry['caption'] }} </br>
+			<h2>IMAGE:</h2><img src = "{{ entry['url'] }}" ></br>
+	{% endfor %}
+	-->
+	{{ entries }}
+	</ul>
+
+{% else %}
+	</br>
+{% endif %}	
+<form method="post" action="/">
+	<input type="text" name="message">
+	<input type="submit" value="Send">
+</form>
+{% endblock %}
