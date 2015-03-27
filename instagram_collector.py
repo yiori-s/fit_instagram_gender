@@ -1,133 +1,14 @@
 import sys
 from settings import instgram_access_token
-from alchemyapi.alchemyapi import AlchemyAPI
-import requests
-import requests_cache
+from api import InstagramAPI, Alchemy
+import pandas as pd
 
-# API呼び出しの結果をsqliteにキャッシュする
-requests_cache.install_cache('cache_instagram', allowable_methods=('GET', 'POST'))
+def following_users(api, user_name):
 
-URL_ROOT = "https://api.instagram.com/v1/"
+    instgram_user_id = api.user_id(user_name=user_name)
+    following_users = api.follows_list(user_id=instgram_user_id)
 
-
-class InstagramAPI():
-    def __init__(self, access_token):
-        self.access_token = access_token
-
-    def user_recent_media(self, user_id):
-        url = URL_ROOT + "users/{0}/media/recent/?access_token={1}".format(user_id, self.access_token)
-
-        r = requests.get(url)
-        return r.json()
-
-    def user_id(self, user_name):
-        url = URL_ROOT + "users/search?q={0}&access_token={1}".format(instgram_user_name, self.access_token)
-
-        r = requests.get(url)
-        result = r.json()
-        user_id = None    
-        for i in range(len(result["data"])):
-            if user_name == result["data"][i]["username"]:
-                user_id = result["data"][i]["id"]
-                break
-
-        return user_id
-
-    def media_list(self, user_name):
-        # user_name = 'yiori_s'
-        url = URL_ROOT + "users/search?q={0}&access_token={1}".format(user_name, self.access_token)
-        r = requests.get(url)
-        result = r.json()    
-        user_id = None
-        for i in range(len(result["data"])):
-            if user_name == result["data"][i]["username"]:
-                user_id = result["data"][i]["id"]
-                break
-        # user_id = str(37880905)
-
-        instgram_user_id = user_id
-        if instgram_user_id is not None:
-            url = URL_ROOT + "users/{0}/media/recent/?access_token={1}".format(instgram_user_id, self.access_token)
-            r = requests.get(url)
-            response_json = r.json()
-        
-        rows = len(response_json["data"])
-        data = []
-        for i in range(rows):
-            small_data = []
-            small_data.append(response_json['data'][i]['created_time'])  # 投稿日時
-            cap = response_json['data'][i]['caption']
-            if cap is not None:
-                small_data.append(response_json['data'][i]['caption']['text'])  # キャプション
-            else:
-                small_data.append("No_caption")
-            small_data.append(response_json['data'][i]['images']['standard_resolution']['url'])  # 画像URL
-            data.append(small_data)
-        return data
-
-    def media_list_dict(self, user_name):
-        url = URL_ROOT + "users/search?q={0}&access_token={1}".format(user_name, self.access_token)
-        r = requests.get(url)
-        result = r.json()
-        user_id = None    
-        for i in range(len(result["data"])):
-            if user_name == result["data"][i]["username"]:
-                user_id = result["data"][i]["id"]
-                break
-        instgram_user_id = user_id
-        if instgram_user_id is not None:
-            url = URL_ROOT + "users/{0}/media/recent/?access_token={1}".format(instgram_user_id, self.access_token)
-            r = requests.get(url)
-            response_json = r.json()
-        
-        rows = len(response_json["data"])
-        data = []
-        for i in range(rows):
-            small_dict = {}
-            small_dict["date"]=response_json['data'][i]['created_time'] #投稿日時
-            cap = response_json['data'][i]['caption']
-            if cap is not None:
-                small_dict["caption"]=response_json['data'][i]['caption']['text'] #キャプション
-            else:
-                small_dict["caption"]="No_caption"
-            small_dict["url"]=response_json['data'][i]['images']['standard_resolution']['url'] #画像URL
-            data.append(small_dict)            
-        return data
-
-    def follows_list(self, user_name):
-        api = InstagramAPI(access_token=instgram_access_token)
-        userid = api.userid(user_name=user_name)
-
-        url = URL_ROOT + "users/{0}/follows&access_token={1}".format(user_id, self.access_token)
-        r = requests.get(url)
-        result = r.json()
-        follows_list = result["data"]
-
-
-class Alchemy():
-
-    @staticmethod
-    def tag_list(image_url):
-        alchemyapi = AlchemyAPI()
-        alchemy_json = alchemyapi.imageTagging("url", image_url)
-        # if len(alchemy_json["imageKeywords"]) > 0:
-        #     tag = alchemy_json["imageKeywords"][0]["text"]
-        #     score = alchemy_json["imageKeywords"][0]["score"]
-        # else:
-        #     tag = "No Tag"
-        #     score = "No Score"
-        # return tag, score
-
-        image_keywords = alchemy_json["imageKeywords"]
-
-        # for image_keyword in image_keywords:
-        #     tag = image_keyword["text"]
-        #     score = image_keyword["score"]
-
-        result_list = [(image_keyword["text"], image_keyword["score"]) for image_keyword in image_keywords]
-
-        return result_list
-
+    return following_users
 
 
 if __name__ == '__main__':
@@ -139,12 +20,33 @@ if __name__ == '__main__':
 
     instgram_user_name = argvs[1]
     api = InstagramAPI(access_token=instgram_access_token)
-    data = api.media_list(user_name=instgram_user_name)
-    for entry in data:
-        image_url = entry[2]
-        tag_list = Alchemy.tag_list(image_url=image_url)
-        entry.append(tag_list)
 
-    print(data)
+    following_users = following_users(api, instgram_user_name)
+    following_users = following_users[0:40]
+    # following_user_ids = [following_user["user_id"] for following_user in following_users]
+    # following_user_ids = following_user_ids[0:1]
 
+    # entries_list = [entries_list for entries_list in [(user_id, api.media_list(user_id)) for user_id in following_user_ids]]
+
+    userinfo_list = []
+    for user in following_users:
+        entries = api.media_list(user["user_id"])
+        [entry.update({'tag_list': Alchemy.tag_list(image_url=entry['url'])}) for entry in entries]
+        tags = [entry['tag_list'] for entry in entries]
+        df = pd.DataFrame(tags).fillna(0)
+        user_summery = df.sum()
+        user_summery = user_summery.to_dict()
+        user.update(user_summery)
+        userinfo_list.append(user)
+    users_df = pd.DataFrame(userinfo_list)
+    users_df.to_csv("user_tags.csv")
+    # for following_user in following_users:
+    #     # entries = api.media_list(user_name=following_user)
+    #     # for entry in entries:
+    #     #     image_url = entry["url"]
+    #     #     tag_list = Alchemy.tag_list(image_url=image_url)
+    #     #     entry.update({"tag_list": tag_list})
+    #     #     print(entry)
+    #     # print(entries)
+    print(userinfo_list)
 
