@@ -60,3 +60,4 @@ target/
 *.sqlite
 api_key.txt
 .env
+.idea/
