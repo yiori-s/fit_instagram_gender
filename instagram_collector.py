@@ -23,10 +23,6 @@ if __name__ == '__main__':
 
     following_users = following_users(api, instgram_user_name)
     following_users = following_users[0:40]
-    # following_user_ids = [following_user["user_id"] for following_user in following_users]
-    # following_user_ids = following_user_ids[0:1]
-
-    # entries_list = [entries_list for entries_list in [(user_id, api.media_list(user_id)) for user_id in following_user_ids]]
 
     userinfo_list = []
     for user in following_users:

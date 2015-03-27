@@ -1,6 +1,7 @@
 from alchemyapi.alchemyapi import AlchemyAPI
 import requests
 import requests_cache
+import pandas as pd
 
 # API呼び出しの結果をsqliteにキャッシュする
 requests_cache.install_cache('cache_instagram', allowable_methods=('GET', 'POST'))
@@ -59,6 +60,16 @@ class InstagramAPI():
 
         return following_users
 
+    def user_info(self, user):
+        entries = self.media_list(user["user_id"])
+        [entry.update({'tag_list': Alchemy.tag_list(image_url=entry['url'])}) for entry in entries]
+        tags = [entry['tag_list'] for entry in entries]
+        df = pd.DataFrame(tags).fillna(0)
+        user_summery = df.sum()
+        user_summery = user_summery.to_dict()
+        user.update(user_summery)
+
+        return user
 
 class Alchemy():
 
@@ -70,4 +81,3 @@ class Alchemy():
         result_list = {image_keyword["text"]: float(image_keyword["score"]) for image_keyword in image_keywords}
 
         return result_list
-

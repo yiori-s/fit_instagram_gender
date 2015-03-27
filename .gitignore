@@ -61,3 +61,7 @@ target/
 api_key.txt
 .env
 .idea/
+.ipynb_checkpoints/
+*.ipynb
+*.csv
+
