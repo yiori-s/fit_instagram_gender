@@ -11,6 +11,30 @@ def following_users(api, user_name):
     return following_users
 
 
+def userinfo_list(api, following_users):
+
+    userinfo_list = []
+    for user in following_users:
+        entries = api.media_list(user["user_id"])
+
+        for entry in entries:
+            tag_list = Alchemy.tag_list(image_url=entry['url'])
+
+            if tag_list is None:
+                return userinfo_list
+
+            entry.update({'tag_list': tag_list})
+
+        tags = [entry['tag_list'] for entry in entries]
+        df = pd.DataFrame(tags).fillna(0)
+        user_summery = df.sum()
+        user_summery = user_summery.to_dict()
+        user.update(user_summery)
+        userinfo_list.append(user)
+
+    return userinfo_list
+
+
 if __name__ == '__main__':
     argvs = sys.argv
     argc = len(argvs)
@@ -24,18 +48,10 @@ if __name__ == '__main__':
     following_users = following_users(api, instgram_user_name)
     following_users = following_users[0:40]
 
-    userinfo_list = []
-    for user in following_users:
-        entries = api.media_list(user["user_id"])
-        [entry.update({'tag_list': Alchemy.tag_list(image_url=entry['url'])}) for entry in entries]
-        tags = [entry['tag_list'] for entry in entries]
-        df = pd.DataFrame(tags).fillna(0)
-        user_summery = df.sum()
-        user_summery = user_summery.to_dict()
-        user.update(user_summery)
-        userinfo_list.append(user)
+    userinfo_list = userinfo_list(api, following_users)
     users_df = pd.DataFrame(userinfo_list)
     users_df.to_csv("user_tags.csv")
+
     # for following_user in following_users:
     #     # entries = api.media_list(user_name=following_user)
     #     # for entry in entries:
