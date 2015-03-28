@@ -49,7 +49,7 @@ if __name__ == '__main__':
     following_users = following_users[0:40]
 
     userinfo_list = userinfo_list(api, following_users)
-    users_df = pd.DataFrame(userinfo_list)
+    users_df = pd.DataFrame(userinfo_list).fillna(0)
     users_df.to_csv("user_tags.csv")
 
     # for following_user in following_users:
