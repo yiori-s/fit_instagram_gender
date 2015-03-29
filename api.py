@@ -76,8 +76,11 @@ class Alchemy():
     @staticmethod
     def tag_list(image_url):
         alchemyapi = AlchemyAPI()
-        alchemy_json = alchemyapi.imageTagging("url", image_url)
-        image_keywords = alchemy_json["imageKeywords"]
-        result_list = {image_keyword["text"]: float(image_keyword["score"]) for image_keyword in image_keywords}
+        if ".jpg" in image_url:
+            alchemy_json = alchemyapi.imageTagging("url", image_url)
+            image_keywords = alchemy_json["imageKeywords"]
+            result_list = {image_keyword["text"]: float(image_keyword["score"]) for image_keyword in image_keywords}
+        else:
+            result_list = {"Movie": 0}
 
         return result_list
