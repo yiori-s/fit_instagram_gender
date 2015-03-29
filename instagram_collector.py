@@ -39,6 +39,8 @@ if __name__ == '__main__':
 
     for f_user in following_users:
         if f_user["user_id"] in set(userid_list):
+            pass
+        else:
             get_users.append(f_user)
 
     get_users = get_users[0:40]
