@@ -20,7 +20,6 @@ class InstagramAPI():
 
     def user_id(self, user_name):
         url = URL_ROOT + "users/search?q={0}&access_token={1}".format(user_name, self.access_token)
-
         r = requests.get(url)
         result = r.json()
         user_id = None
@@ -70,6 +69,13 @@ class InstagramAPI():
         user.update(user_summery)
 
         return user
+
+    def profile_image(self, user_id):
+        url = URL_ROOT + "users/{0}?access_token={1}".format(user_id, self.access_token)
+        r = requests.get(url)
+        result = r.json()
+        profile_image = result["data"]["profile_picture"]
+        return profile_image
 
 
 class Alchemy():

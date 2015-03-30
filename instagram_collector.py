@@ -67,7 +67,7 @@ if __name__ == '__main__':
         else:
             get_users.append(f_user)
 
-    get_users = get_users[0:2]
+    get_users = get_users[0:40]
     # following_users = following_users[0:40]
 
     userinfo_list = userinfo_list(api, get_users)
