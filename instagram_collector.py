@@ -12,6 +12,30 @@ def following_users(api, user_name):
     return following_users
 
 
+def userinfo_list(api, following_users):
+
+    userinfo_list = []
+    for user in following_users:
+        entries = api.media_list(user["user_id"])
+
+        for entry in entries:
+            tag_list = Alchemy.tag_list(image_url=entry['url'])
+
+            if tag_list is None:
+                return userinfo_list
+
+            entry.update({'tag_list': tag_list})
+
+        tags = [entry['tag_list'] for entry in entries]
+        df = pd.DataFrame(tags).fillna(0)
+        user_summery = df.sum()
+        user_summery = user_summery.to_dict()
+        user.update(user_summery)
+        userinfo_list.append(user)
+
+    return userinfo_list
+
+
 if __name__ == '__main__':
     argvs = sys.argv
     argc = len(argvs)
@@ -23,7 +47,7 @@ if __name__ == '__main__':
     api = InstagramAPI(access_token=instgram_access_token)
 
     # 取得済みのユーザ情報をCSVからロード
-    f = open('user_tags.csv', 'r')
+    f = open('gotten_user_tags.csv', 'r')
     reader = csv.DictReader(f)
     gotten_users = []
     for user in reader:
@@ -43,22 +67,13 @@ if __name__ == '__main__':
         else:
             get_users.append(f_user)
 
-    get_users = get_users[0:40]
+    get_users = get_users[0:2]
     # following_users = following_users[0:40]
 
-    userinfo_list = []
-    # for user in following_users:
-    for user in get_users:
-        entries = api.media_list(user["user_id"])
-        [entry.update({'tag_list': Alchemy.tag_list(image_url=entry['url'])}) for entry in entries]
-        tags = [entry['tag_list'] for entry in entries]
-        df = pd.DataFrame(tags).fillna(0)
-        user_summery = df.sum()
-        user_summery = user_summery.to_dict()
-        user.update(user_summery)
-        userinfo_list.append(user)
-    users_df = pd.DataFrame(userinfo_list)
+    userinfo_list = userinfo_list(api, get_users)
+    users_df = pd.DataFrame(userinfo_list).fillna(0)
     users_df.to_csv("user_tags.csv")
+
     # for following_user in following_users:
     #     # entries = api.media_list(user_name=following_user)
     #     # for entry in entries:
