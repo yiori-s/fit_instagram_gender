@@ -9,4 +9,7 @@ python-dateutil==2.4.1
 six==1.9.0
 numpy==1.9.2
 scipy==0.15.1
+pandas==0.16.0
+scikit-learn==0.16.0
+pytz==2015.2
 
