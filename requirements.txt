@@ -7,6 +7,4 @@ requests-cache==0.4.9
 requests==2.6.0
 python-dateutil==2.4.1
 six==1.9.0
-scipy==0.15.1
 numpy==1.9.2
-
