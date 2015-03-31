@@ -12,9 +12,9 @@
 </form>
 
 {% if method == "POST" %}
-
     <div class="col-lg-12">
-    <h1>Your data</h1>
+    <h1>{{ massage }}</h1>
+    {% if message == "Your Instagram data" %}
     <div class="pull-left">
         <h2>User Name : {{ userinfo['user_name'] }}</h2>
         <h2>Estimated :
@@ -53,6 +53,7 @@
         </tbody>
     </table>
 	</div>
+    {% endif %}
     </div>
 {% endif %}
 </div>

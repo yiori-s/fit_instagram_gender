@@ -13,7 +13,9 @@ def index():
         if request.method == 'POST':
             if request.form['message'] == '':
                 message = "Please input your Instagram User name in the box"
+                return render_template('index.html', title="Your gender?", method=request.method, message=message)
             else:
+                message = "Your Instagram data"
                 insta = InstagramAPI(access_token=instgram_access_token)
                 user_name = request.form['message']
                 user_id = insta.user_id(user_name=user_name)
@@ -35,7 +37,7 @@ def index():
                 clf = joblib.load(model_path)
                 result = clf.predict(user_vec)
 
-                return render_template('index.html', title="Your gender?", method=request.method, userinfo=user_summery, result=result)
+                return render_template('index.html', title="Your gender?", method=request.method, userinfo=user_summery, result=result, message=message)
         else:
             return render_template('index.html', title="Your gender?", method=request.method)
 
