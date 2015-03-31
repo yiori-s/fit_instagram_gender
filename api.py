@@ -1,10 +1,10 @@
 from alchemyapi.alchemyapi import AlchemyAPI
 import requests
-import requests_cache
+# import requests_cache
 import pandas as pd
 
 # API呼び出しの結果をsqliteにキャッシュする
-requests_cache.install_cache('cache_instagram', allowable_methods=('GET', 'POST'))
+# requests_cache.install_cache('cache_instagram', allowable_methods=('GET', 'POST'))
 
 URL_ROOT = "https://api.instagram.com/v1/"
 
@@ -61,6 +61,7 @@ class InstagramAPI():
 
     def user_info(self, user):
         entries = self.media_list(user["user_id"])
+        entries = entries[0:3]
         [entry.update({'tag_list': Alchemy.tag_list(image_url=entry['url'])}) for entry in entries]
         tags = [entry['tag_list'] for entry in entries]
         df = pd.DataFrame(tags).fillna(0)

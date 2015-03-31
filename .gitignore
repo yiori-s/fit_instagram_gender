@@ -63,4 +63,4 @@ api_key.txt
 .idea/
 .ipynb_checkpoints/
 *.csv
-
+venv/
