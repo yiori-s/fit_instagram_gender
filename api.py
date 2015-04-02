@@ -23,9 +23,16 @@ class InstagramAPI():
         r = requests.get(url)
         result = r.json()
         user_id = None
-        for i in range(len(result["data"])):
-            if user_name == result["data"][i]["username"]:
-                user_id = result["data"][i]["id"]
+
+        try:
+            hit_users = result["data"]
+        except KeyError:
+            message = "maybe API error"
+            return message
+        else:
+            for i in range(len(hit_users)):
+                if user_name == hit_users[i]["username"]:
+                    user_id = hit_users[i]["id"]
                 break
 
         return user_id
@@ -75,8 +82,13 @@ class InstagramAPI():
         url = URL_ROOT + "users/{0}?access_token={1}".format(user_id, self.access_token)
         r = requests.get(url)
         result = r.json()
-        profile_image = result["data"]["profile_picture"]
-        return profile_image
+        try:
+            profile_image = result["data"]["profile_picture"]
+        except KeyError:
+            message = "No key"
+            return message
+        else:
+            return profile_image
 
 
 class Alchemy():
