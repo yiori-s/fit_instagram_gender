@@ -19,9 +19,9 @@ def index():
                 insta = InstagramAPI(access_token=instgram_access_token)
                 user_name = request.form['message']
                 user_id = insta.user_id(user_name=user_name)
-                profile_image = insta.profile_image(user_id)
+                profile_image = insta.profile_image(user_id=user_id)
                 user = {'user_name': user_name, 'user_id': user_id, 'image': profile_image}
-                user_summery = insta.user_info(user=user)
+                user_summary = insta.user_info(user=user)
                 test = {'nail': 0, 'hair': 0, 'person': 0, 'sport': 0, 'food': 0, 'night': 0, 'coffee': 0,
                         'wedding': 0, 'cake': 0, 'beer': 0, 'dog': 0, 'animal': 0, 'tree': 0, 'blossom': 0,
                         'cat': 0, 'flower': 0, 'sky': 0, 'nature': 0, 'cherry': 0, "user_name": "test", "user_id": "test"}
@@ -37,15 +37,16 @@ def index():
                 clf = joblib.load(model_path)
                 result = clf.predict(user_vec)
 
-                return render_template('index.html', title="Your gender?", method=request.method, userinfo=user_summery, result=result, message=message)
+                return render_template('index.html', title="Your gender?", method=request.method, userinfo=user_summary, result=result, message=message)
         else:
             return render_template('index.html', title="Your gender?", method=request.method)
 
     except Exception as e:
-        print(e)
-
+        print (e)
+        return e
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, port=port, host='0.0.0.0')
+    app.run(debug=True)
+    #port = int(os.environ.get("PORT", 5000))
+    #app.run(debug=True, port=port, host='0.0.0.0')
 
