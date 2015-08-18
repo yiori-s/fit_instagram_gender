@@ -23,16 +23,9 @@ class InstagramAPI():
         r = requests.get(url)
         result = r.json()
         user_id = None
-
-        try:
-            hit_users = result["data"]
-        except KeyError:
-            message = "maybe API error"
-            return message
-        else:
-            for i in range(len(hit_users)):
-                if user_name == hit_users[i]["username"]:
-                    user_id = hit_users[i]["id"]
+        for i in range(len(result["data"])):
+            if user_name == result["data"][i]["username"]:
+                user_id = result["data"][i]["id"]
                 break
 
         return user_id
@@ -72,9 +65,9 @@ class InstagramAPI():
         [entry.update({'tag_list': Alchemy.tag_list(image_url=entry['url'])}) for entry in entries]
         tags = [entry['tag_list'] for entry in entries]
         df = pd.DataFrame(tags).fillna(0)
-        user_summery = df.sum()
-        user_summery = user_summery.to_dict()
-        user.update(user_summery)
+        user_summary = df.sum()
+        user_summary = user_summary.to_dict()
+        user.update(user_summary)
 
         return user
 
@@ -82,13 +75,8 @@ class InstagramAPI():
         url = URL_ROOT + "users/{0}?access_token={1}".format(user_id, self.access_token)
         r = requests.get(url)
         result = r.json()
-        try:
-            profile_image = result["data"]["profile_picture"]
-        except KeyError:
-            message = "No key"
-            return message
-        else:
-            return profile_image
+        profile_image = result["data"]["profile_picture"]
+        return profile_image
 
 
 class Alchemy():
