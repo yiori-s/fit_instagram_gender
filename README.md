@@ -1,4 +1,3 @@
-C:\Users\yIori\ownCloud\就活\インターンシップ2014\TIS_intern\TIS_intern\python\fit_instagram_gender\README.md
 # fit_instagram_gender
 ## APIキーの取得
 InstagramAPIキー、AlchemyAPIキーをそれぞれ取得してください。  
