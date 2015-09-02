@@ -6,19 +6,20 @@ import pandas as pd
 # API呼び出しの結果をsqliteにキャッシュする
 # requests_cache.install_cache('cache_instagram', allowable_methods=('GET', 'POST'))
 
-URL_ROOT = "https://api.instagram.com/v1/"
 
+# InstagramAPI
+URL_ROOT = "https://api.instagram.com/v1/"
 
 class InstagramAPI():
     def __init__(self, access_token):
         self.access_token = access_token
 
-    def user_recent_media(self, user_id):
+    def user_recent_media(self, user_id): # instagram最近の投稿画像の取得
         url = URL_ROOT + "users/{0}/media/recent/?access_token={1}".format(user_id, self.access_token)
         r = requests.get(url)
         return r.json()
 
-    def user_id(self, user_name):
+    def user_id(self, user_name): # ユーザー名からユーザーIDの取得
         url = URL_ROOT + "users/search?q={0}&access_token={1}".format(user_name, self.access_token)
         r = requests.get(url)
         result = r.json()
@@ -30,7 +31,7 @@ class InstagramAPI():
 
         return user_id
 
-    def media_list(self, user_id):
+    def media_list(self, user_id): # 画像リストの取得
 
         response_json = {"data": []}
         if user_id is not None:
@@ -50,7 +51,7 @@ class InstagramAPI():
             entries.append(small_dict)
         return entries
 
-    def follows_list(self, user_id):
+    def follows_list(self, user_id): # フォロー中のユーザーリストの取得
         url = URL_ROOT + "users/{0}/follows?access_token={1}".format(user_id, self.access_token)
         r = requests.get(url)
         result = r.json()
@@ -59,7 +60,7 @@ class InstagramAPI():
 
         return following_users
 
-    def user_info(self, user):
+    def user_info(self, user): # ユーザー情報の取得
         entries = self.media_list(user["user_id"])
         entries = entries[0:3]
         [entry.update({'tag_list': Alchemy.tag_list(image_url=entry['url'])}) for entry in entries]
@@ -71,14 +72,14 @@ class InstagramAPI():
 
         return user
 
-    def profile_image(self, user_id):
+    def profile_image(self, user_id): # プロフィール画像の取得
         url = URL_ROOT + "users/{0}?access_token={1}".format(user_id, self.access_token)
         r = requests.get(url)
         result = r.json()
         profile_image = result["data"]["profile_picture"]
         return profile_image
 
-
+# AlchemyAPI
 class Alchemy():
 
     @staticmethod
