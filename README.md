@@ -1,7 +1,7 @@
 # fit_instagram_gender
 ## APIキーの取得
 InstagramAPIキー、AlchemyAPIキーをそれぞれ取得してください。  
-[Instagram](https://instagram.com/developer/)
+[Instagram](https://instagram.com/developer/)  
 [AlchemyAPI](http://www.alchemyapi.com/)
 
 ## 環境変数の設定
@@ -17,10 +17,10 @@ __setting.py__
 [main.py](https://github.com/yiori-s/fit_instagram_gender/blob/master/main.py#L47-51)で、アプリケーションを起動するIPアドレスとポート番号を設定しています。  任意のIPアドレス、ポート番号に変更ができます。  
 
     if __name__ == "__main__":
-        port = int(os.environ.get("PORT", 5000))
-        app.run(debug=True, port=port, host='0.0.0.0')
+        port = int(os.environ.get("PORT", 5000)) #ポート番号
+        app.run(debug=True, port=port, host='0.0.0.0') #IPアドレス
 
 ## アプリケーションの実行
 以下のコマンドでアプリケーションを実行してください。  
 
-    python main.py
+    $ python main.py
